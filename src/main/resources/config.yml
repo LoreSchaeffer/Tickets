@@ -1,0 +1,23 @@
+mysql:
+  host: "localhost"
+  port: 3306
+  database: "database"
+  username: "minecraft"
+  password: "password"
+
+messages:
+  incorrect-usage: "&cIncorrect usage! &fUse &e/ticket &fto get an help message."
+  insufficient-perms: "&4Insufficient permissions!"
+  internal-error: "&4Internal error. Retry later and if you keep seeing this message contact the server administrator."
+  not-now: "&cYou cant use this command now!"
+  not-player: "&4You must be a player to use this command!"
+
+  ticket-list: "&f[&9{id}&f] &9&l{player} &f[&b{world}&f] &3- &7&o{message}"
+  ticket-close: "&9You closed &f{player}'s &9ticket [&f{id}&9]."
+  ticket-close-target: "&9Your ticket [&f{id}&9] has been closed by &f{player} &9with message: &7&o{message}&9."
+  ticket-close-staff: "&f{player} &9closed ticket [&f{id}&9] with message: &7&o{message}&9."
+  ticket-open: "&9You opened a ticket! ID [&f{id}&9]."
+  ticket-open-staff: "&f{player} &9opened a ticket! ID [&f{id}&9] with message: &7&o{message}&9."
+  ticket-resolving: "&9You are resolving &f{player}'s &9ticket [&f{id}&9] with message: &7&o{message}&9."
+  ticket-resolving-staff: "&f{staff} &9is resolving &f{player}'s &9ticket [&f{id}&9] with message: &7&o{message}&9."
+  ticket-undo: "&9This ticket is still open."

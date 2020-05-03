@@ -1,0 +1,9 @@
+name: ${project.name}
+version: ${project.version}
+main: it.multicoredev.spigot.Tickets
+api-version: 1.15
+depend: [MCLibPlugin]
+
+commands:
+  ticket:
+    aliases: [tickets]
