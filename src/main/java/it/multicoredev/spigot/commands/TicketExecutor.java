@@ -15,6 +15,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
+import java.sql.SQLException;
 import java.util.List;
 
 /**
@@ -156,8 +157,13 @@ public class TicketExecutor implements CommandExecutor {
             }
 
             closeTicket(player, ticket, goBack, msg);
-        } else {
-            openTicket(player, Chat.builder(args));
+        } else if (args[0].equalsIgnoreCase("truncate")) {
+            if (!player.hasPermission("ticket.admin")) {
+                insufficientPerms(player);
+                return true;
+            }
+
+            tickets.truncateTable(player);
         }
 
         return true;
@@ -183,7 +189,7 @@ public class TicketExecutor implements CommandExecutor {
         Chat.send("&f&m----&9 Ticket &f&m----", player, true);
         Chat.send("&7&oParams between [] are optional, params between <> are mandatory.", player, true);
         Chat.send("&9/ticket [help] &3- &rShow help this help message.", player, true);
-        Chat.send("&9/ticket [open] <message> &3- &rCreate a new ticket.", player, true);
+        Chat.send("&9/ticket open <message> &3- &rCreate a new ticket.", player, true);
 
         if (player.hasPermission("ticket.resolve")) {
             Chat.send("&9/ticket list &3- &rShow a list of open tickets.", player, true);
@@ -244,7 +250,7 @@ public class TicketExecutor implements CommandExecutor {
         player.setAllowFlight(true);
         player.setFlying(true);
         if (player.hasPermission("ticket.creative")) player.setGameMode(GameMode.CREATIVE);
-        player.teleport(location);
+        Bukkit.getScheduler().callSyncMethod(plugin, () -> player.teleport(location));
 
         Chat.send(getString("ticket-resolving")
                         .replace("{player}", ticket.getUsername())
@@ -266,7 +272,7 @@ public class TicketExecutor implements CommandExecutor {
         player.setAllowFlight(ticket.isAllowFlight());
         player.setFlying(ticket.isFlying());
         player.setGameMode(GameMode.valueOf(ticket.getGamemode()));
-        player.teleport(ticket.getLocation());
+        Bukkit.getScheduler().callSyncMethod(plugin, () -> player.teleport(ticket.getLocation()));
 
         Chat.send(getString("ticket-undo"), player, true);
     }
@@ -281,7 +287,7 @@ public class TicketExecutor implements CommandExecutor {
 
 
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-            if (tickets.closeTicket(ticket)) {
+            if (!tickets.closeTicket(ticket)) {
                 internalError(player);
                 return;
             }
@@ -294,7 +300,7 @@ public class TicketExecutor implements CommandExecutor {
                 player.setAllowFlight(cached.isAllowFlight());
                 player.setFlying(cached.isFlying());
                 player.setGameMode(GameMode.valueOf(cached.getGamemode()));
-                player.teleport(cached.getLocation());
+                Bukkit.getScheduler().callSyncMethod(plugin, () -> player.teleport(cached.getLocation()));
             }
 
             if (target != null) Chat.send(getString("ticket-close-target")

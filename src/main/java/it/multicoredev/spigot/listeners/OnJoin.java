@@ -11,6 +11,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.Plugin;
 
+import java.util.List;
+
 /**
  * Copyright © 2020 by Lorenzo Magni
  * This file is part of Tickets.
@@ -46,6 +48,8 @@ public class OnJoin implements Listener {
     public void onJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
         Ticket ticket = tickets.getTicket(player);
+        if (ticket == null) return;
+
         Chat.send(getString("ticket-close-target")
                 .replace("{id}", String.valueOf(ticket.getId()))
                 .replace("{player}", player.getName())
@@ -55,6 +59,26 @@ public class OnJoin implements Listener {
             ticket.setDelivered(true);
             tickets.setDelivered(ticket);
         });
+
+        if (player.hasPermission("ticket.resolve")) {
+            Chat.send("&f&m----&9 Ticket &f&m----", player, true);
+
+            List<Ticket> openTickets = tickets.getOpenTickets();
+            if (openTickets.isEmpty()) return;
+
+            int t = Math.min(openTickets.size(), 10);
+            for (int i = 0; i < t; i++) {
+                Ticket ticket2 = openTickets.get(i);
+                Chat.send(getString("ticket-list")
+                                .replace("{id}", String.valueOf(ticket2.getId()))
+                                .replace("{player}", ticket2.getUsername())
+                                .replace("{world}", ticket2.getWorld())
+                                .replace("{message}", ticket2.getMessage()),
+                        player, true);
+            }
+
+            Chat.send("&f&m----&9 Ticket &f&m----", player, true);
+        }
     }
 
     private String getString(String path) {

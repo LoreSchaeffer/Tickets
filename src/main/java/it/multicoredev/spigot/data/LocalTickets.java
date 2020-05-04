@@ -37,7 +37,7 @@ public class LocalTickets {
     private final Plugin plugin;
     private final MySQL db;
     private List<Ticket> tickets;
-    private int lastId = 1;
+    private int lastId = 0;
     private BukkitTask task = null;
 
     public LocalTickets(Plugin plugin, MySQL db) {
@@ -195,6 +195,19 @@ public class LocalTickets {
         }
 
         tickets.removeIf(t -> t.getId() == ticket.getId());
+        return true;
+    }
+
+    public boolean truncateTable(Player player) {
+        try {
+            String query = "TRUNCATE TABLE " + db.getTable() + ";";
+            db.executeUpdate(query);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+
+        Chat.send("&dDatabase truncated!", player, true);
         return true;
     }
 }
